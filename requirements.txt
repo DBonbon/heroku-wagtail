@@ -58,11 +58,9 @@ django-contrib-comments==1.9.2
 emoji==0.6.0
 wagtailfontawesome
 django_widget_tweaks
-gunicorn
 wagtail_blocks
 dj_database_url
 django-environ
-psycopg2
 wagtail-blocks
 django-dbbackup
 
