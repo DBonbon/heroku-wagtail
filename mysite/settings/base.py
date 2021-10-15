@@ -27,10 +27,21 @@ INSTALLED_APPS = [
     'home',
     'search',
 
+    'about',
     'blog',
+    'catalog',
+    'contact',
+    'expo',
+    'flex',
+    'menus',
+    'painter',
+    'streams',
 
     'wagtail.contrib.forms',
+    'wagtail.contrib.modeladmin',
+    #'wagtailmenus',
     'wagtail.contrib.redirects',
+    "wagtail.contrib.routable_page",
     'wagtail.embeds',
     'wagtail.sites',
     'wagtail.users',
@@ -45,6 +56,11 @@ INSTALLED_APPS = [
     'taggit',
     'storages',
     'django_extensions',
+    'wagtailcaptcha',
+    'wagtailfontawesome',
+    'widget_tweaks',
+    'wagtail_blocks',
+    'dbbackup',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -56,6 +72,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -181,3 +198,18 @@ WAGTAIL_SITE_NAME = "mysite"
 BASE_URL = 'http://example.com'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# reCaptcha settings
+SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
+RECAPTCHA_PUBLIC_KEY: '6Lc1cPMbAAAAAAd2S996JYEtBG2xXFwL3msYHxAt'
+RECAPTCHA_PRIVATE_KEY: '6Lc1cPMbAAAAAO_94mWAv7keFlhRTWf8OQ1adWNo'
+#RECAPTCHA_PUBLIC_KEY = '<your public reCaptcha key>'
+#RECAPTCHA_PRIVATE_KEY = '<your private reCaptcha key>'
+# enable no captcha
+NOCAPTCHA = True
+
+
+#DB BACKUPS
+DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
+DBBACKUP_STORAGE_OPTIONS = {'location': os.path.join(BASE_DIR, '../backups')}
+

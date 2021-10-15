@@ -1,7 +1,9 @@
 from django.db import models
 from django.shortcuts import render
-# from django_extensions.db.fields import AutoSlugField
+from django_extensions.db.fields import AutoSlugField
+from wagtail.snippets.models import register_snippet
 
+from wagtail.core.fields import RichTextField
 from wagtail.core.blocks import CharBlock, PageChooserBlock
 from wagtail.core.models import Page, Orderable
 from wagtail.core.fields import RichTextField, StreamField
@@ -16,7 +18,7 @@ from wagtail.admin.edit_handlers import (
 )
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.images.blocks import ImageChooserBlock
-#from streams import blocks
+from streams import blocks
 #from articles.models import ArticlePage, ArticleIndexPage
 
 
@@ -43,47 +45,69 @@ class HomePage(RoutablePageMixin, Page):
     template = "home/home_page.html"
     max_count = 1
 
-    # cover = StreamField(
-    #     [('cover', blocks.CoverImageBlock())],
-    #     null=True, blank=True,
-    # )
-    # #     ('image', ImageChooserBlock()),
-    #     ('teaser', blocks.RichtextBlock(null=True, blanc=True, features=['h1', 'h2', 'h3', 'h4', "bold", "italic"])),
-    #     ('sub_teaser', blocks.RichtextBlock(null=True, blanc=True, features=['h4', 'h5', 'h6', "bold", "italic"])),
-    # ])
 
-    banner = StreamField([
-        ('image', ImageChooserBlock(blank=True, null=True)),
-        ('banner_title', CharBlock(max_length=100, blank=True, null=True)),
-        ('banner_sub_title', CharBlock(max_length=100, blank=True, null=True)),
-    ], null=True, blank=True)
+    teaser =RichTextField(null=True, blank=True, features=["bold", "italic"])
+    sub_teaser = RichTextField(null=True, blank=True, features=['h4', 'h5', 'h6', "bold", "italic"])
+    cover_image =models.ForeignKey(
+        "wagtailimages.Image",
+        null=True,
+        blank=False,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
 
-    # content = StreamField(
-    #     [
-    #         ("cta", blocks.CTABlock(blank=True, null=True)),
-    #     ],
-    #     null=True,
-    #     blank=True,
-    # )
+
+    #cover = StreamField(
+    #    [('cover', blocks.CoverImageBlock(null=True, blank=True))]
+    #)
+
+    banner_title = models.CharField(null=True, blank=True, max_length=100)
+    banner_subtitle = RichTextField(null=True, blank=True, features=["bold", "italic"])
+    banner_image = models.ForeignKey(
+        "wagtailimages.Image",
+        null=True,
+        blank=False,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+    banner_cta = models.ForeignKey(
+        "wagtailcore.Page",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+
+    content = StreamField(
+        [
+            ("cta", blocks.CTABlock(blank=True, null=True)),
+        ],
+        null=True,
+        blank=True,
+    )
 
     content_panels = Page.content_panels + [
-        # MultiFieldPanel(
-        #     [
-        #         StreamFieldPanel('cover'),
-        #     ],
-        #         heading="Cover",
-        #         classname="collapsible collapsed",
-        # ),
 
         MultiFieldPanel(
             [
-            StreamFieldPanel('banner'),
+                FieldPanel("banner_title"),
+                FieldPanel("banner_subtitle"),
+                ImageChooserPanel("banner_image"),
+                PageChooserPanel("banner_cta"),
             ],
             heading="Banner Options",
-            classname = "collapsible collapsed",
+            classname="collapsible collapsed",
         ),
 
-        #StreamFieldPanel("content"),
+        MultiFieldPanel(
+            [
+                FieldPanel("teaser"),
+                FieldPanel("sub_teaser"),
+                ImageChooserPanel("cover_image"),
+            ],
+            heading="Cover Image",
+            classname="collapsible collapsed",
+        ),
 
         MultiFieldPanel(
                 [InlinePanel("carousel_images", max_num=5, min_num=0, label="Image")],
@@ -97,8 +121,26 @@ class HomePage(RoutablePageMixin, Page):
         verbose_name = "Home Page"
         verbose_name_plural = "Home Pages"
 
+    #
+    # @route(r'^subscribe/$')
+    # def the_subscribe_page(self, request, *args, **kwargs):
+    #     context = self.get_context(request, *args, **kwargs)
+    #     return render(request, "home/subscribe.html", context)
 
-    @route(r'^subscribe/$')
-    def the_subscribe_page(self, request, *args, **kwargs):
-        context = self.get_context(request, *args, **kwargs)
-        return render(request, "home/subscribe.html", context)
+
+
+
+@register_snippet
+class CompanyLogo(models.Model):
+    name = models.CharField(max_length=250)
+    logo = models.ForeignKey(
+        'wagtailimages.Image', on_delete=models.CASCADE, related_name='+'
+    )
+
+    panels = [
+        FieldPanel('name', classname='full'),
+        ImageChooserPanel('logo'),
+    ]
+
+    def __str__(self):
+        return self.name

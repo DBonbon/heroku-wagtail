@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load static wagtailcore_tags wagtailimages_tags %}
+
+{% block content %}
+
+
+    <style>
+        .contact-form {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .contact-form li {
+            margin-bottom: 1.5rem;
+        }
+        .contact-form label {
+            display: block;
+            font-weight: bold;
+        }
+        .contact-form .helptext {
+            display: block;
+            font-size: 80%;
+        }
+    </style>
+
+
+
+<section class="page-section bg-secondary text-white mb-0" id="about">
+    <div class="container">
+        <!-- About Section Heading-->
+        <h1 class="page-section-heading text-center text-uppercase text-white">{{ self.title }}</h1>
+        <h6 class="page-section-heading text-center text-uppercase text-white">{{ self.subtitle|richtext }}</h6>
+
+        <!-- About Section Content-->
+        <div class="lead">
+            <p>
+                {{ self.our_mission|richtext }}
+
+            </p>
+        </div>
+    </div>
+
+<!-- Contact Section Content-->
+</section>
+
+<section>
+    <div class="container mt-5 mb-5">
+        <h1 class="page-section-heading text-center text-uppercase text-red">{{ page.contact_section_title|richtext }}</h1>
+        <h6 class="page-section-heading text-center text-uppercase text-red">
+            {{ self.contact_subtitle|richtext }}
+        </h6>
+
+        <form action="{% pageurl page %}" method="POST">
+            {% csrf_token %}
+            <ul class="contact-form">
+                {{ form.as_ul }}
+            </ul>
+
+            <button type="submit" class="btn btn-success">
+                Submit Form
+            </button>
+        </form>
+    </div>
+</section>
+
+{% endblock %}

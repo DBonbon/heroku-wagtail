@@ -1,0 +1,22 @@
+{% load wagtailroutablepage_tags wagtailcore_tags %}
+
+<div class="card my-4">
+  <h5 class="card-header">Tags</h5>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-lg-12">
+        <ul class="list-unstyled mb-0">
+          {% for tag in tags %}
+            <li>
+              <a href="{% routablepageurl painting_index_page 'post_by_tag' tag.url %}">
+                class= "link-primary text-decoration-none">{{ tag.name }}
+              </a>
+            </li>
+          {% empty %}
+            'No tags yet'
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
